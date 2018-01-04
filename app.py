@@ -194,5 +194,5 @@ if __name__ == '__main__':
     # thread.start_new(upExamStatusStart, ("thread-1", 1,))
     # thread.start_new(upExamStatusStop, ("thread-2", 1,))
     # thread.start_new(upInformationState, ("thread-3", 1,))
-    thread.start_new(CreatQuestionSource, ("thread-4", 1,))
+    # thread.start_new(CreatQuestionSource, ("thread-4", 1,))
     thread.start_new(app.run())

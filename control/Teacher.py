@@ -3,6 +3,7 @@
 
 import sys
 import os
+import shutil
 sys.path.append('../')
 from config import configs
 from model import model
@@ -11,6 +12,7 @@ import util
 from model.orm import *
 from config_default import remind_source
 from config_default import exampage_source
+import time
 urls = (
     'Login', 'Login',
     'GetTeacher','GetTeacher',
@@ -31,10 +33,22 @@ class BatchPrintExam:
         # print str
         classname = model.Class_model.getByPK(params.class_cl_id)
         examname = model.Exam_model.getByPK(params.ex_id)
-        directoryName = classname.cl_name + examname.ex_name
-        # try:
-        # os.mkdir('%s/%s' % (exampage_source, directoryName))
-
+        try:
+            os.mkdir('%s/%s_%s' % (exampage_source, params.class_cl_id, params.ex_id))
+        except:
+            shutil.rmtree('%s/%s_%s' % (exampage_source, params.class_cl_id, params.ex_id))
+        try:
+            student = model.Student_has_class_model.getByArgs(class_cl_id=params.class_cl_id)
+            for student_id in student:
+                filepath = str(
+                    '%s/%s_%s/%s.docx' % (exampage_source, params.class_cl_id, params.ex_id, student_id.student_st_id))
+                # print filepath
+                util.word(student_id.student_st_id, params.ex_id, filepath)
+            util.zip_path('%s/%s_%s' % (exampage_source, params.class_cl_id, params.ex_id), '%s' % (exampage_source),
+                          u'%s_%s.zip' % (params.class_cl_id, params.ex_id))
+        except:
+            response = util.Response(status=util.Status.__error__,)
+            return util.objtojson(response)
         response = util.Response(status=util.Status.__success__, message =str )
         return util.objtojson(response)
 class print_exam:

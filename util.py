@@ -12,18 +12,33 @@ from docx import Document
 from docx.shared import Pt
 from docx.shared import Inches
 from docx.oxml.ns import qn
-
+import zipfile,os
 type = dict(choice="选择题", coding="编程题", filla="读程序写结果", fillb="程序填空", judge="判断")
 in_state = ["未参加", "正在考试", "已结束", "作弊"]
-'''
-对象转json
-'''
 
-def word(obj,student_st_id,exam_ex_id):
+def dfs_get_zip_file(input_path,result):
+    files = os.listdir(input_path)
+    for file in files:
+        if os.path.isdir(input_path+'/'+file):
+            dfs_get_zip_file(input_path+'/'+file,result)
+        else:
+            result.append(input_path+'/'+file)
+
+def zip_path(input_path,output_path,output_name):
+    f = zipfile.ZipFile(output_path+'/'+output_name,'w',zipfile.ZIP_DEFLATED)
+    filelists = []
+    dfs_get_zip_file(input_path,filelists)
+    for file in filelists:
+        f.write(file)
+    f.close()
+    print output_path+r"/"+output_name
+
+
+def word(student_st_id,exam_ex_id,filepath):
     # 打开文档
     document = Document()
     # 加入不同等级的标题
-    exam = model.Exam_model.getByPK(1)
+    exam = model.Exam_model.getByPK(exam_ex_id)
     document.add_heading(u'\t\t' + exam['ex_name'], 0)
 
     information = model.Information_model()
@@ -91,7 +106,7 @@ def word(obj,student_st_id,exam_ex_id):
         # print fillb
         fillb_question.append(fillb)
 
-    student = model.Student_model.getByPK(2014112207)
+    student = model.Student_model.getByPK(student_st_id)
     # 添加文本
     paragraph = document.add_paragraph()
     paragraph.add_run(u'学号:\t')
@@ -219,8 +234,12 @@ def word(obj,student_st_id,exam_ex_id):
     # document.add_page_break()
 
     # 保存文件
-    document.save(u'测试.docx')
-
+    # print "savepage"
+    # document.save(u'../examTransplant2.2/source/exampage/2014.docx')
+    document.save(str(filepath))
+'''
+对象转json
+'''
 def objtojson(obj):
     return jsonpickle.encode(obj)
 
