@@ -32,8 +32,8 @@ class BatchPrintExam:
         classname = model.Class_model.getByPK(params.class_cl_id)
         examname = model.Exam_model.getByPK(params.ex_id)
         directoryName = classname.cl_name + examname.ex_name
-        try:
-            os.mkdir('%s/%s' % (exampage_source, directoryName))
+        # try:
+        # os.mkdir('%s/%s' % (exampage_source, directoryName))
 
         response = util.Response(status=util.Status.__success__, message =str )
         return util.objtojson(response)
